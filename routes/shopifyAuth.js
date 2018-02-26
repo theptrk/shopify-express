@@ -50,12 +50,14 @@ module.exports = function createShopifyAuthRouter({
     delete map['signature'];
     delete map['hmac'];
 
+    console.log('a');
     const message = querystring.stringify(map);
     const generated_hash = crypto
       .createHmac('sha256', secret)
       .update(message)
       .digest('hex');
 
+    console.log('b');
     if (generated_hash !== hmac) {
       return response.status(400).send('HMAC validation failed');
     }
@@ -70,6 +72,7 @@ module.exports = function createShopifyAuthRouter({
       client_secret: secret,
     });
 
+    console.log('c');
     fetch(`https://${shop}/admin/oauth/access_token`, {
       method: 'POST',
       headers: {
@@ -82,6 +85,7 @@ module.exports = function createShopifyAuthRouter({
       .then(responseBody => {
         const accessToken = responseBody.access_token;
 
+        console.log('d');
         shopStore.storeShop({ accessToken, shop }, (err, token) => {
           if (err) {
             console.error('🔴 Error storing shop access token', err);
